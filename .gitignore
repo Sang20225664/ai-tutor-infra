@@ -1,0 +1,19 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Sensitive variables at root level only
+terraform.tfvars
+*.auto.tfvars
+
+# NOTE: environments/ directory IS committed — it contains non-sensitive config

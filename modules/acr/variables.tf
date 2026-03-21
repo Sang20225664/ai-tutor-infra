@@ -17,3 +17,9 @@ variable "resource_group_name" {
   description = "Name of the resource group"
   type        = string
 }
+
+variable "acr_name_override" {
+  description = "Override ACR name if default name is globally taken"
+  type        = string
+  default     = ""
+}

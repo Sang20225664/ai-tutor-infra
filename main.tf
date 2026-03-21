@@ -22,6 +22,7 @@ module "acr" {
   environment         = var.environment
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
+  acr_name_override   = var.acr_name_override
 }
 
 module "aks" {

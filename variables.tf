@@ -19,11 +19,17 @@ variable "location" {
 variable "node_vm_size" {
   description = "VM size for AKS worker nodes"
   type        = string
-  default     = "Standard_B2s"
+  default     = "Standard_D2pls_v5"
 }
 
 variable "node_count" {
   description = "Number of AKS worker nodes"
   type        = number
   default     = 1
+}
+
+variable "acr_name_override" {
+  description = "Override ACR if name is globally taken"
+  type        = string
+  default     = ""
 }

@@ -50,3 +50,22 @@ module "keyvault" {
   tenant_id           = data.azurerm_client_config.current.tenant_id
   current_user_oid    = data.azurerm_client_config.current.object_id
 }
+
+module "cosmosdb" {
+  source = "./modules/cosmosdb"
+
+  project_name        = var.project_name
+  environment         = var.environment
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  tags                = local.common_tags
+}
+
+module "github_oidc" {
+  source = "./modules/github-oidc"
+
+  project_name    = var.project_name
+  github_username = var.github_username
+  github_repo     = var.github_repo
+  acr_id          = module.acr.acr_id
+}

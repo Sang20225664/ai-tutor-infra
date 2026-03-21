@@ -33,3 +33,15 @@ variable "acr_name_override" {
   type        = string
   default     = ""
 }
+
+variable "github_username" {
+  description = "GitHub username or organization"
+  type        = string
+  default     = "Sang20225664"
+}
+
+variable "github_repo" {
+  description = "GitHub repository name"
+  type        = string
+  default     = "AI-Tutor"
+}

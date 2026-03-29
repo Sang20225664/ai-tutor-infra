@@ -28,3 +28,13 @@ output "kube_config" {
   value     = azurerm_kubernetes_cluster.main.kube_config[0]
   sensitive = true
 }
+
+output "key_vault_secrets_provider_object_id" {
+  description = "Object ID of the Key Vault Secrets Provider managed identity"
+  value       = azurerm_kubernetes_cluster.main.key_vault_secrets_provider[0].secret_identity[0].object_id
+}
+
+output "ingress_static_ip" {
+  description = "Static Public IP address for the Ingress Controller"
+  value       = azurerm_public_ip.ingress.ip_address
+}

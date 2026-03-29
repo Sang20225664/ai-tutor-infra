@@ -1,3 +1,8 @@
+variable "static_ip" {
+  description = "The static public IP address for the ingress controller"
+  type        = string
+}
+
 resource "helm_release" "nginx_ingress" {
   name             = "nginx-ingress"
   repository       = "https://kubernetes.github.io/ingress-nginx"
@@ -14,6 +19,11 @@ resource "helm_release" "nginx_ingress" {
   set {
     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-health-probe-request-path"
     value = "/healthz"
+  }
+
+  set {
+    name  = "controller.service.loadBalancerIP"
+    value = var.static_ip
   }
 }
 

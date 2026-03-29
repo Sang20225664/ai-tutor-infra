@@ -49,6 +49,9 @@ module "keyvault" {
   resource_group_name = azurerm_resource_group.main.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
   current_user_oid    = data.azurerm_client_config.current.object_id
+  aks_kv_identity_oid = module.aks.key_vault_secrets_provider_object_id
+
+  depends_on = [module.aks]
 }
 
 module "cosmosdb" {
@@ -72,5 +75,7 @@ module "github_oidc" {
 
 module "ingress" {
   source = "./modules/ingress"
+
+  static_ip  = module.aks.ingress_static_ip
   depends_on = [module.aks]
 }

@@ -14,9 +14,15 @@ resource "azurerm_key_vault" "main" {
   }
 }
 
-# Grant current user Key Vault Administrator role
 resource "azurerm_role_assignment" "kv_admin" {
   scope                = azurerm_key_vault.main.id
   role_definition_name = "Key Vault Administrator"
   principal_id         = var.current_user_oid
+}
+
+# Grant AKS Key Vault Secrets Provider identity the Key Vault Secrets User role
+resource "azurerm_role_assignment" "aks_kv_secrets_user" {
+  scope                = azurerm_key_vault.main.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = var.aks_kv_identity_oid
 }

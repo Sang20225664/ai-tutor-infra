@@ -27,3 +27,8 @@ variable "current_user_oid" {
   description = "Object ID of the current user for Key Vault Administrator role"
   type        = string
 }
+
+variable "aks_kv_identity_oid" {
+  description = "Object ID of the AKS Key Vault Secrets Provider Managed Identity"
+  type        = string
+}

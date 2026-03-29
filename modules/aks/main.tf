@@ -31,6 +31,24 @@ resource "azurerm_kubernetes_cluster" "main" {
     dns_service_ip    = "10.1.0.10"
   }
 
+  key_vault_secrets_provider {
+    secret_rotation_enabled = true
+  }
+
+  tags = {
+    Project     = var.project_name
+    Environment = var.environment
+  }
+}
+
+# Create a Static Public IP for the NGINX Ingress Controller in the Node Resource Group
+resource "azurerm_public_ip" "ingress" {
+  name                = "${var.project_name}-${var.environment}-ingress-ip"
+  resource_group_name = azurerm_kubernetes_cluster.main.node_resource_group
+  location            = var.location
+  allocation_method   = "Static"
+  sku                 = "Standard"
+
   tags = {
     Project     = var.project_name
     Environment = var.environment

@@ -32,3 +32,21 @@ variable "aks_kv_identity_oid" {
   description = "Object ID of the AKS Key Vault Secrets Provider Managed Identity"
   type        = string
 }
+
+variable "cosmos_connection_string" {
+  description = "CosmosDB MongoDB connection string"
+  type        = string
+  sensitive   = true
+}
+
+variable "jwt_secret" {
+  description = "JWT signing secret"
+  type        = string
+  sensitive   = true
+}
+
+variable "gemini_api_key" {
+  description = "Google Gemini API key"
+  type        = string
+  sensitive   = true
+}

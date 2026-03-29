@@ -45,3 +45,15 @@ variable "github_repo" {
   type        = string
   default     = "AI-Tutor"
 }
+
+variable "jwt_secret" {
+  description = "JWT signing secret for auth service"
+  type        = string
+  sensitive   = true
+}
+
+variable "gemini_api_key" {
+  description = "Google Gemini API key for AI services"
+  type        = string
+  sensitive   = true
+}

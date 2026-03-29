@@ -16,4 +16,6 @@ terraform.rc
 terraform.tfvars
 *.auto.tfvars
 
-# NOTE: environments/ directory IS committed — it contains non-sensitive config
+# Sensitive environment configs (contains secrets)
+environments/dev/dev.tfvars
+environments/prod/prod.tfvars

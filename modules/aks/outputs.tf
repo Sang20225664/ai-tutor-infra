@@ -23,3 +23,8 @@ output "kubelet_identity_object_id" {
   description = "Object ID of the kubelet managed identity"
   value       = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
 }
+
+output "kube_config" {
+  value     = azurerm_kubernetes_cluster.main.kube_config[0]
+  sensitive = true
+}

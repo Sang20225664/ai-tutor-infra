@@ -43,3 +43,7 @@ output "github_actions_client_id" {
   description = "Use for AZURE_CLIENT_ID in GitHub Secrets"
   value       = module.github_oidc.client_id
 }
+
+output "ingress_ip" {
+  value = module.ingress.ingress_ip
+}

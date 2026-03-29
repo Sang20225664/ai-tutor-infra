@@ -69,3 +69,8 @@ module "github_oidc" {
   github_repo     = var.github_repo
   acr_id          = module.acr.acr_id
 }
+
+module "ingress" {
+  source = "./modules/ingress"
+  depends_on = [module.aks]
+}

@@ -35,3 +35,19 @@ resource "azurerm_role_assignment" "acr_push" {
   role_definition_name = "AcrPush"
   principal_id         = azuread_service_principal.github_actions.object_id
 }
+
+resource "azuread_application_federated_identity_credential" "env_prod" {
+  application_id = azuread_application.github_actions.id
+  display_name   = "github-env-prod"
+  issuer         = "https://token.actions.githubusercontent.com"
+  subject        = "repo:${var.github_username}/${var.github_repo}:environment:prod"
+  audiences      = ["api://AzureADTokenExchange"]
+}
+
+resource "azuread_application_federated_identity_credential" "env_dev" {
+  application_id = azuread_application.github_actions.id
+  display_name   = "github-env-dev"
+  issuer         = "https://token.actions.githubusercontent.com"
+  subject        = "repo:${var.github_username}/${var.github_repo}:environment:dev"
+  audiences      = ["api://AzureADTokenExchange"]
+}

@@ -57,3 +57,14 @@ variable "gemini_api_key" {
   type        = string
   sensitive   = true
 }
+
+variable "letsencrypt_email" {
+  description = "Email for Let's Encrypt ACME registration"
+  type        = string
+}
+
+variable "letsencrypt_server" {
+  description = "ACME server URL for cert-manager"
+  type        = string
+  default     = "https://acme-v02.api.letsencrypt.org/directory"
+}

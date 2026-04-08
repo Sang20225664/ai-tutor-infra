@@ -1,0 +1,5 @@
+project_name        = "ai-tutor"
+environment         = "dev"
+location            = "japaneast"
+resource_group_name = "ai-tutor-dev-rg"
+key_vault_name      = "ai-tutor-dev-kv"

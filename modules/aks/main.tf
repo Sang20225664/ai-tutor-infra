@@ -5,10 +5,12 @@ resource "azurerm_kubernetes_cluster" "main" {
   dns_prefix          = "${var.project_name}-${var.environment}"
 
   default_node_pool {
-    name           = "default"
-    node_count     = var.node_count
-    vm_size        = var.node_vm_size
-    vnet_subnet_id = var.vnet_subnet_id
+    name                        = "default"
+    temporary_name_for_rotation = "temppool"
+    node_count                  = var.node_count
+    vm_size                     = var.node_vm_size
+    max_pods                    = 50
+    vnet_subnet_id              = var.vnet_subnet_id
 
     tags = {
       Project     = var.project_name

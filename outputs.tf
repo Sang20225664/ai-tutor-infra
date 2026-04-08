@@ -23,21 +23,6 @@ output "kubeconfig_command" {
   value       = "az aks get-credentials --resource-group ${azurerm_resource_group.main.name} --name ${module.aks.cluster_name}"
 }
 
-output "cosmos_endpoint" {
-  description = "Endpoint URL of the CosmosDB account"
-  value       = module.cosmosdb.endpoint
-}
-
-output "cosmos_account_name" {
-  description = "Name of the CosmosDB account"
-  value       = module.cosmosdb.account_name
-}
-
-output "cosmos_connection_string" {
-  description = "Primary connection string for CosmosDB"
-  value       = module.cosmosdb.connection_string
-  sensitive   = true
-}
 
 output "github_actions_client_id" {
   description = "Use for AZURE_CLIENT_ID in GitHub Secrets"

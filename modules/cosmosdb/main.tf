@@ -6,7 +6,7 @@ resource "azurerm_cosmosdb_account" "main" {
   kind                = "MongoDB"
   tags                = var.tags
 
-  free_tier_enabled = true # $0/tháng — 1000 RU/s + 25GB free
+  free_tier_enabled = true # $0/month — 1000 RU/s + 25GB free (1 free tier per subscription)
 
   capabilities {
     name = "EnableMongo"
@@ -26,8 +26,9 @@ resource "azurerm_cosmosdb_account" "main" {
   }
 
   backup {
-    type = "Continuous"
-    tier = "Continuous7Days"
+    type = "Periodic"
+    interval_in_minutes = 240
+    retention_in_hours  = 8
   }
 }
 
@@ -36,7 +37,5 @@ resource "azurerm_cosmosdb_mongo_database" "main" {
   resource_group_name = var.resource_group_name
   account_name        = azurerm_cosmosdb_account.main.name
 
-  autoscale_settings {
-    max_throughput = 1000
-  }
+  throughput = 400
 }

@@ -50,22 +50,12 @@ module "keyvault" {
   tenant_id                = data.azurerm_client_config.current.tenant_id
   current_user_oid         = data.azurerm_client_config.current.object_id
   aks_kv_identity_oid      = module.aks.key_vault_secrets_provider_object_id
-  cosmos_connection_string = module.cosmosdb.connection_string
   jwt_secret               = var.jwt_secret
   gemini_api_key           = var.gemini_api_key
 
-  depends_on = [module.aks, module.cosmosdb]
+  depends_on = [module.aks]
 }
 
-module "cosmosdb" {
-  source = "./modules/cosmosdb"
-
-  project_name        = var.project_name
-  environment         = var.environment
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-  tags                = local.common_tags
-}
 
 module "github_oidc" {
   source = "./modules/github-oidc"

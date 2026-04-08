@@ -33,11 +33,7 @@ variable "aks_kv_identity_oid" {
   type        = string
 }
 
-variable "cosmos_connection_string" {
-  description = "CosmosDB MongoDB connection string"
-  type        = string
-  sensitive   = true
-}
+
 
 variable "jwt_secret" {
   description = "JWT signing secret"

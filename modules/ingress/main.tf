@@ -52,6 +52,82 @@ resource "helm_release" "cert_manager" {
   }
 }
 
+resource "helm_release" "prometheus_stack" {
+  name             = "kube-prometheus-stack"
+  repository       = "https://prometheus-community.github.io/helm-charts"
+  chart            = "kube-prometheus-stack"
+  namespace        = "monitoring"
+  create_namespace = true
+  version          = "58.2.2"
+
+  # Grafana: serve at /grafana path on existing domain (no subdomain needed)
+  set {
+    name  = "grafana.adminPassword"
+    value = "admin123"
+  }
+
+  set {
+    name  = "grafana.grafana\\.ini.server.root_url"
+    value = "https://ai-tutot-ts.duckdns.org/grafana"
+  }
+
+  set {
+    name  = "grafana.grafana\\.ini.server.serve_from_sub_path"
+    value = "true"
+  }
+
+  set {
+    name  = "grafana.ingress.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "grafana.ingress.ingressClassName"
+    value = "nginx"
+  }
+
+  set {
+    name  = "grafana.ingress.hosts[0]"
+    value = "ai-tutot-ts.duckdns.org"
+  }
+
+  set {
+    name  = "grafana.ingress.path"
+    value = "/grafana(/|$)(.*)"
+  }
+
+  set {
+    name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/rewrite-target"
+    value = "/$2"
+  }
+
+  set {
+    name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/use-regex"
+    value = "true"
+    type  = "string"
+  }
+
+  set {
+    name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/ssl-redirect"
+    value = "true"
+    type  = "string"
+  }
+
+  # Prometheus: retain 7 days of metrics
+  set {
+    name  = "prometheus.prometheusSpec.retention"
+    value = "7d"
+  }
+
+  # Disable alertmanager to save resources on single-node cluster
+  set {
+    name  = "alertmanager.enabled"
+    value = "false"
+  }
+
+  depends_on = [helm_release.cert_manager]
+}
+
 resource "null_resource" "letsencrypt_clusterissuer" {
   triggers = {
     letsencrypt_email  = var.letsencrypt_email

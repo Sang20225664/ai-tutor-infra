@@ -8,6 +8,10 @@ output "cluster_id" {
   value       = azurerm_kubernetes_cluster.main.id
 }
 
+output "aks_id" {
+  value = azurerm_kubernetes_cluster.main.id
+}
+
 output "kube_config_raw" {
   description = "Raw kubeconfig for the AKS cluster"
   value       = azurerm_kubernetes_cluster.main.kube_config_raw

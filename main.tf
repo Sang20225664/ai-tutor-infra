@@ -25,33 +25,66 @@ module "acr" {
   acr_name_override   = var.acr_name_override
 }
 
-module "aks" {
-  source = "./modules/aks"
+module "monitoring" {
+  source = "./modules/monitoring"
 
   project_name        = var.project_name
   environment         = var.environment
-  location            = azurerm_resource_group.main.location
+  location            = var.location
   resource_group_name = azurerm_resource_group.main.name
-  node_vm_size        = var.node_vm_size
-  node_count          = var.node_count
-  vnet_subnet_id      = module.networking.aks_subnet_id
-  acr_id              = module.acr.acr_id
+  tags                = local.common_tags
+  alert_email         = var.alert_email
+  aks_id              = null
+}
 
-  depends_on = [module.networking, module.acr]
+module "aks" {
+  source = "./modules/aks"
+
+  project_name               = var.project_name
+  environment                = var.environment
+  location                   = azurerm_resource_group.main.location
+  resource_group_name        = azurerm_resource_group.main.name
+  node_vm_size               = var.node_vm_size
+  node_count                 = var.node_count
+  vnet_subnet_id             = module.networking.aks_subnet_id
+  acr_id                     = module.acr.acr_id
+  log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
+
+  depends_on = [module.networking, module.acr, module.monitoring]
+}
+
+resource "azurerm_monitor_metric_alert" "pod_restart" {
+  name                = "pod-restart-alert"
+  resource_group_name = azurerm_resource_group.main.name
+  scopes              = [module.aks.aks_id]
+  description         = "Alert when pod count indicates potential instability"
+  severity            = 2
+
+  criteria {
+    metric_namespace = "Microsoft.ContainerService/managedClusters"
+    metric_name      = "PodCount"
+    aggregation      = "Average"
+    operator         = "GreaterThan"
+    threshold        = 0
+  }
+
+  action {
+    action_group_id = module.monitoring.action_group_id
+  }
 }
 
 module "keyvault" {
   source = "./modules/keyvault"
 
-  project_name             = var.project_name
-  environment              = var.environment
-  location                 = azurerm_resource_group.main.location
-  resource_group_name      = azurerm_resource_group.main.name
-  tenant_id                = data.azurerm_client_config.current.tenant_id
-  current_user_oid         = data.azurerm_client_config.current.object_id
-  aks_kv_identity_oid      = module.aks.key_vault_secrets_provider_object_id
-  jwt_secret               = var.jwt_secret
-  gemini_api_key           = var.gemini_api_key
+  project_name        = var.project_name
+  environment         = var.environment
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  tenant_id           = data.azurerm_client_config.current.tenant_id
+  current_user_oid    = data.azurerm_client_config.current.object_id
+  aks_kv_identity_oid = module.aks.key_vault_secrets_provider_object_id
+  jwt_secret          = var.jwt_secret
+  gemini_api_key      = var.gemini_api_key
 
   depends_on = [module.aks]
 }

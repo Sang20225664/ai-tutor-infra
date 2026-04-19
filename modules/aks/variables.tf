@@ -37,3 +37,8 @@ variable "acr_id" {
   description = "ID of the Azure Container Registry for AcrPull role assignment"
   type        = string
 }
+
+variable "log_analytics_workspace_id" {
+  description = "Log Analytics Workspace ID for Container Insights"
+  type        = string
+}

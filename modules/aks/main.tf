@@ -37,6 +37,10 @@ resource "azurerm_kubernetes_cluster" "main" {
     secret_rotation_enabled = true
   }
 
+  oms_agent {
+    log_analytics_workspace_id = var.log_analytics_workspace_id
+  }
+
   tags = {
     Project     = var.project_name
     Environment = var.environment

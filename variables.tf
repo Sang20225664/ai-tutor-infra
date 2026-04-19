@@ -68,3 +68,8 @@ variable "letsencrypt_server" {
   type        = string
   default     = "https://acme-v02.api.letsencrypt.org/directory"
 }
+
+variable "alert_email" {
+  type    = string
+  default = "sangdtmdk31@gmail.com"
+}

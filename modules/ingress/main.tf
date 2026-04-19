@@ -36,6 +36,21 @@ resource "helm_release" "nginx_ingress" {
     name  = "controller.service.loadBalancerIP"
     value = var.static_ip
   }
+
+  set {
+    name  = "controller.metrics.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "controller.metrics.serviceMonitor.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "controller.metrics.serviceMonitor.namespace"
+    value = "monitoring"
+  }
 }
 
 resource "helm_release" "cert_manager" {
@@ -93,24 +108,12 @@ resource "helm_release" "prometheus_stack" {
 
   set {
     name  = "grafana.ingress.path"
-    value = "/grafana(/|$)(.*)"
+    value = "/grafana"
   }
 
   set {
-    name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/rewrite-target"
-    value = "/$2"
-  }
-
-  set {
-    name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/use-regex"
-    value = "true"
-    type  = "string"
-  }
-
-  set {
-    name  = "grafana.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/ssl-redirect"
-    value = "true"
-    type  = "string"
+    name  = "grafana.ingress.pathType"
+    value = "Prefix"
   }
 
   # Prometheus: retain 7 days of metrics

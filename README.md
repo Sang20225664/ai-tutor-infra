@@ -34,16 +34,23 @@ Terraform code quản lý hạ tầng Azure cho dự án **AI Tutor** (Node.js m
 
 ```
 ai-tutor-infra/
-├── main.tf              # Provider, backend, module calls
-├── variables.tf         # Input variables
-├── outputs.tf           # Output values
-├── terraform.tfvars     # Giá trị thực (KHÔNG commit)
-├── .gitignore
+├── main.tf                   # Root module: gọi tất cả sub-modules
+├── variables.tf
+├── outputs.tf
+├── environments/
+│   └── dev/
+│       ├── dev.tfvars            # Giá trị cấu hình (không commit secrets)
+│       └── backend.tfvars        # Backend state config
+├── layers/                   # Tách layer độc lập (CosmosDB riêng do lifecycle dài)
+│   └── cosmosdb/              # CosmosDB account + MongoDB database + Key Vault secret
 └── modules/
-    ├── networking/      # VNet, Subnet, NSG
-    ├── aks/             # AKS Cluster, AcrPull role
-    ├── acr/             # Azure Container Registry
-    └── keyvault/        # Azure Key Vault, RBAC admin role
+    ├── networking/            # VNet, Subnet, NSG
+    ├── aks/                   # AKS Cluster, OIDC, AcrPull role, Static IP
+    ├── acr/                   # Azure Container Registry
+    ├── keyvault/              # Azure Key Vault, RBAC, secrets (JWT, Gemini)
+    ├── github_oidc/           # Federated Identity cho GitHub Actions (passwordless)
+    ├── cosmosdb/              # CosmosDB module (dùng bởi layer cosmosdb)
+    └── ingress/               # NGINX Ingress + cert-manager + Prometheus/Grafana
 ```
 
 ## Yêu cầu
@@ -128,15 +135,29 @@ az aks get-credentials \
 - SKU: Basic
 - Admin access: disabled (sử dụng managed identity thay vì admin credentials)
 
-### Key Vault
-- SKU: Standard
-- Authorization: RBAC (không dùng access policy)
-- Soft delete: 7 ngày
-- Purge protection: disabled
-- Role: Key Vault Administrator cho current user
+### Ingress
+- **NGINX Ingress Controller** v4.10.1: Static IP `20.48.58.10`, load balancer Azure
+- **cert-manager** v1.16.2: Tự động issue + renew Let's Encrypt TLS cert
+  - `ClusterIssuer`: `letsencrypt-prod` (ACME HTTP-01 challenge)
+  - Certificate: `ai-tutor-prod-tls` cho domain `ai-tutot-ts.duckdns.org`
+  - HTTPS xác minh: TLSv1.3, Let's Encrypt R12, hết hạn 29/06/2026 (tự renew)
+
+### Prometheus + Grafana
+- **kube-prometheus-stack** v58.2.2 (namespace `monitoring`)
+  - Prometheus: scrape metrics toàn bộ cluster, retention 7 ngày
+  - Grafana: `https://ai-tutot-ts.duckdns.org/grafana/` (path-based, dùng lại TLS cert sẵn)
+  - kube-state-metrics + node-exporter: đầy đủ system metrics
+  - AlertManager: disabled (tiết kiệm resource single-node)
+
+### GitHub OIDC
+- Federated Identity Credential cho GitHub Actions
+- Không lưu secret nào — token JWT tự mint mỗi job, hết hạn sau job
+- OIDC scope: push `dev` branch → deploy `dev` namespace; push `main` → deploy `prod` namespace
 
 ## Lưu ý
 
 > **⚠️ Region Policy**: Subscription chỉ cho phép các region: `koreacentral`, `japanwest`, `centralindia`, `indonesiacentral`, `japaneast`. Project sử dụng `japaneast`.
 
-> **🔒 Bảo mật**: File `terraform.tfvars` chứa giá trị cấu hình thực và đã được thêm vào `.gitignore`. Không commit file này lên Git.
+> **🔒 Bảo mật**: File `*.tfvars` chứa giá trị cấu hình thực và đã được thêm vào `.gitignore`. Không commit file này lên Git.
+
+> **📂 Layer tách biệt**: `layers/cosmosdb` có state file riêng (`cosmosdb/ai-tutor-dev.tfstate`) vì lifecycle của CosmosDB dài hơn các resource khác. Destroy root module không ảnh hưởng CosmosDB.

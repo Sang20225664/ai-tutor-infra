@@ -51,6 +51,11 @@ resource "helm_release" "nginx_ingress" {
     name  = "controller.metrics.serviceMonitor.namespace"
     value = "monitoring"
   }
+
+  set {
+    name  = "controller.metrics.serviceMonitor.additionalLabels.release"
+    value = "kube-prometheus-stack"
+  }
 }
 
 resource "helm_release" "cert_manager" {

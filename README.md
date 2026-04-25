@@ -15,7 +15,7 @@ Terraform code quản lý hạ tầng Azure cho dự án **AI Tutor** (Node.js m
 │  │  │  AKS Subnet 10.0.1.0/24               │  │   │
 │  │  │  NSG: Allow HTTP (80) + HTTPS (443)    │  │   │
 │  │  │  ┌──────────────────────────────────┐  │  │   │
-│  │  │  │  AKS Cluster (1x Standard_B2s)  │  │  │   │
+│  │  │  │  AKS Cluster (1x Standard_B4pls_v2)  │  │  │   │
 │  │  │  │  Azure CNI + Calico              │  │  │   │
 │  │  │  │  OIDC + Workload Identity        │  │  │   │
 │  │  │  └──────────────────────────────────┘  │  │   │

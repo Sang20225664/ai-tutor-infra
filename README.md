@@ -15,7 +15,7 @@ Terraform code quản lý hạ tầng Azure cho dự án **AI Tutor** (Node.js m
 │  │  │  AKS Subnet 10.0.1.0/24               │  │   │
 │  │  │  NSG: Allow HTTP (80) + HTTPS (443)    │  │   │
 │  │  │  ┌──────────────────────────────────┐  │  │   │
-│  │  │  │  AKS Cluster (1x Standard_B4pls_v2)  │  │  │   │
+│  │  │  │  AKS Cluster (1x Standard_B4pls_v2) │  │  │   │
 │  │  │  │  Azure CNI + Calico              │  │  │   │
 │  │  │  │  OIDC + Workload Identity        │  │  │   │
 │  │  │  └──────────────────────────────────┘  │  │   │
@@ -105,7 +105,7 @@ az aks get-credentials \
 | `project_name` | `ai-tutor` | Prefix cho tên resource |
 | `environment` | `dev` | Môi trường (dev/staging/prod) |
 | `location` | `japaneast` | Azure region |
-| `node_vm_size` | `Standard_B2s` | VM size cho AKS node |
+| `node_vm_size` | `Standard_B4pls_v2` | VM size cho AKS node |
 | `node_count` | `1` | Số lượng AKS worker node |
 
 ## Outputs
@@ -126,7 +126,7 @@ az aks get-credentials \
 - **NSG**: Allow inbound TCP port 80 (HTTP) và 443 (HTTPS)
 
 ### AKS
-- 1 node pool `Standard_B2s` với SystemAssigned identity
+- 1 node pool `Standard_B4pls_v2` (4 vCPU / 8 GB RAM) với SystemAssigned identity, `max_pods = 50`
 - OIDC Issuer + Workload Identity enabled
 - Network: Azure CNI + Calico network policy
 - Role assignment `AcrPull` để pull image từ ACR
@@ -148,6 +148,11 @@ az aks get-credentials \
   - Grafana: `https://ai-tutot-ts.duckdns.org/grafana/` (path-based, dùng lại TLS cert sẵn)
   - kube-state-metrics + node-exporter: đầy đủ system metrics
   - AlertManager: disabled (tiết kiệm resource single-node)
+
+### GitOps & Autoscaling
+- **ArgoCD** v3.3.8 (namespace `argocd`): auto-sync Helm chart từ GitHub `main` branch → namespace `prod`. Self-healing enabled.
+- **Argo Rollouts**: Canary strategy cho `backend` (20% → 50% → 100%), tích hợp NGINX Ingress traffic splitting.
+- **KEDA** (namespace `keda`): `ScaledObject` cho `ai-worker` — scale 0↔3 replicas dựa trên Redis list length `bull:ai-jobs:wait`. Redis FQDN: `redis.prod.svc.cluster.local:6379`.
 
 ### GitHub OIDC
 - Federated Identity Credential cho GitHub Actions

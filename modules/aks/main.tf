@@ -9,7 +9,7 @@ resource "azurerm_kubernetes_cluster" "main" {
     temporary_name_for_rotation = "temppool"
     node_count                  = var.node_count
     vm_size                     = var.node_vm_size
-    max_pods                    = 50
+    max_pods                    = 110
     vnet_subnet_id              = var.vnet_subnet_id
 
     upgrade_settings {

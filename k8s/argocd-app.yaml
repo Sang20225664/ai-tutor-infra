@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ai-tutor-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Sang20225664/AI-Tutor.git
+    targetRevision: main
+    path: charts/ai-tutor
+    helm:
+      releaseName: ai-tutor
+      valueFiles:
+        - values-prod.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: prod
+  syncPolicy: {}

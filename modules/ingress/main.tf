@@ -56,6 +56,11 @@ resource "helm_release" "nginx_ingress" {
     name  = "controller.metrics.serviceMonitor.additionalLabels.release"
     value = "kube-prometheus-stack"
   }
+
+  depends_on = [
+    helm_release.cert_manager,
+    helm_release.prometheus_stack
+  ]
 }
 
 resource "helm_release" "cert_manager" {
@@ -140,6 +145,7 @@ resource "null_resource" "letsencrypt_clusterissuer" {
   triggers = {
     letsencrypt_email  = var.letsencrypt_email
     letsencrypt_server = var.letsencrypt_server
+    ingress_static_ip  = var.static_ip
   }
 
   provisioner "local-exec" {

@@ -12,6 +12,12 @@ resource "azurerm_kubernetes_cluster" "main" {
     max_pods                    = 50
     vnet_subnet_id              = var.vnet_subnet_id
 
+    upgrade_settings {
+      max_surge                     = "10%"
+      drain_timeout_in_minutes      = 0
+      node_soak_duration_in_minutes = 0
+    }
+
     tags = {
       Project     = var.project_name
       Environment = var.environment

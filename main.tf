@@ -57,15 +57,16 @@ resource "azurerm_monitor_metric_alert" "pod_restart" {
   name                = "pod-restart-alert"
   resource_group_name = azurerm_resource_group.main.name
   scopes              = [module.aks.aks_id]
-  description         = "Alert when pod count indicates potential instability"
+  description         = "Alert when AKS node CPU is high"
   severity            = 2
 
   criteria {
-    metric_namespace = "Microsoft.ContainerService/managedClusters"
-    metric_name      = "PodCount"
-    aggregation      = "Average"
-    operator         = "GreaterThan"
-    threshold        = 0
+    metric_namespace       = "Microsoft.ContainerService/managedClusters"
+    metric_name            = "node_cpu_usage_percentage"
+    aggregation            = "Average"
+    operator               = "GreaterThan"
+    threshold              = 80
+    skip_metric_validation = true
   }
 
   action {

@@ -13,6 +13,10 @@ resource "azurerm_cosmosdb_account" "main" {
   }
 
   capabilities {
+    name = "EnableServerless"
+  }
+
+  capabilities {
     name = "mongoEnableDocLevelTTL"
   }
 
@@ -36,6 +40,4 @@ resource "azurerm_cosmosdb_mongo_database" "main" {
   name                = "ai_tutor"
   resource_group_name = var.resource_group_name
   account_name        = azurerm_cosmosdb_account.main.name
-
-  throughput = 400
 }
